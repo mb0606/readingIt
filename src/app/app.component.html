@@ -1,3 +1,12 @@
-<h1>
-  {{title}}
-</h1>
+<div class="ui container">
+  <app-sidebar ></app-sidebar>
+
+  <div class="ui divided items">
+    <app-article
+      class="item"
+      *ngFor="let article of articles"
+      [article]="article"></app-article>
+
+  </div>
+
+</div>
