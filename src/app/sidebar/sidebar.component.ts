@@ -8,12 +8,13 @@ import { Observable } from 'rxjs';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-  private _sources: Observable<any>;
+  private sources: Observable<any>;
   constructor( private _articleService: ArticleService) {
     this.sources = _articleService.sources;
   }
 
   ngOnInit() {
+    this._articleService.getSources();
   }
 
 }

@@ -16,8 +16,7 @@ interface ArticleSortOrderFn {
 };
 
 const sortByTime: ArticleSortOrderFn =
-  (direction: number) => (a: Article, b: Article)
-                          => {
+  (direction: number) => (a: Article, b: Article) => {
     return direction *
       (b.publishedAt.getTime() - a.publishedAt.getTime());
   };
@@ -42,6 +41,10 @@ export class ArticleService {
   private _sources: BehaviorSubject<any> =
     new BehaviorSubject<any>([]);
 
+  private _refreshSubject:
+    BehaviorSubject<string> = new
+    BehaviorSubject<string>('reddit-r-all');
+
   private _sortByDirectionSubject:
     BehaviorSubject<number> = new
     BehaviorSubject<number>(1)
@@ -62,6 +65,8 @@ export class ArticleService {
   public orderedArticles: Observable<Article[]>;
 
   constructor( private _http: Http) {
+    this._refreshSubject
+      .subscribe(this.getArticles.bind(this));
     this.orderedArticles =
       Observable.combineLatest(
         this._articles,
@@ -91,8 +96,12 @@ export class ArticleService {
     this._filterBySubject.next(filter);
   }
 
-  public getArticles(): void {
-    this._makeHttpRequest('/v1/articles', 'reddit-r-all')
+  public updateArticles(sourceKey): void {
+    this._refreshSubject.next(sourceKey);
+  }
+
+  public getArticles(sourceKey = 'reddit-r-all'): void {
+    this._makeHttpRequest('/v1/articles', sourceKey)
       .map(json => json.articles)
       .subscribe(articlesJSON => {
         let articles = articlesJSON
@@ -116,7 +125,9 @@ export class ArticleService {
   ): Observable<any> {
     let params = new URLSearchParams();
     params.set('apiKey', environment.newsApiKey);
-    params.set('source', sourceKey);
+    if (sourceKey && sourceKey !== '') {
+      params.set('source', sourceKey);
+    }
     return this._http
       .get(`${environment.baseUrl}${path}`, {
         search: params})
