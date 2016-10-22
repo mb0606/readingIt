@@ -5,6 +5,7 @@ interface ArticleJSON {
   description: string;
   author: string;
   urlToImage: string;
+  publishedAt: Date;
 }
 
 export class Article {
@@ -16,7 +17,7 @@ export class Article {
     console.log("article obj -> ", article)
     return Object.assign(article, json, {
       votes: json.votes ? json.votes : 0,
-      imageUrl: json.urlToImage
+      imageUrl: json.urlToImage,
       publishedAt: json.publishedAt ? new Date(json.publishedAt) : new Date()
     });
   }
