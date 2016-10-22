@@ -39,6 +39,8 @@ export class ArticleService {
 
   private _articles: BehaviorSubject<Article[]> =
     new BehaviorSubject(<Article[]>([]));
+  private _sources: BehaviorSubject<any> =
+    new BehaviorSubject<any>([]);
 
   private _sortByDirectionSubject:
     BehaviorSubject<number> = new
@@ -52,6 +54,9 @@ export class ArticleService {
     BehaviorSubject<string> = new
     BehaviorSubject<string>('')
 
+
+  public sources: Observable<any> =
+    this._sources.asObservable();
   public articles: Observable<Article[]> =
     this._articles.asObservable();
   public orderedArticles: Observable<Article[]>;
@@ -97,9 +102,17 @@ export class ArticleService {
       })
   }
 
+  public getSources(): void {
+    this._makeHttpRequest('/v1/sources')
+      .map(json => json.sources)
+      .filter(list => list.length > 0)
+      .subscribe(this._sources);
+
+  }
+
   private _makeHttpRequest(
     path:string,
-    sourceKey: string
+    sourceKey?: string
   ): Observable<any> {
     let params = new URLSearchParams();
     params.set('apiKey', environment.newsApiKey);
