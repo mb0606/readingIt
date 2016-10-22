@@ -7,6 +7,7 @@
       <div class="menu">
         <a
         routerLink="/news/{{ source['id'] }}"
+        routerLinkActive="active"
         class="item news-item"
         *ngFor="let source of sources | async "
         >
